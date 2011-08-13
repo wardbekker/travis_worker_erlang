@@ -1,6 +1,7 @@
-require "pathname"
-require "fileutils"
+require 'pathname'
+require 'fileutils'
 require 'hashr'
+require 'travis/worker/job/helpers/repository'
 
 module Travis
   module Worker
@@ -60,17 +61,19 @@ module Travis
         def work!(shell = nil)
           start
           perform
-        rescue
+        rescue => e
+          puts "Error : #{e.inspect}"
+          e.backtrace.each { |b| puts "  #{b}" }
         ensure
           finish
         end
 
         def repository
-          @repository ||= Repository.new(build_dir, payload.repository.slug, build.config ? build.config : {})
+          @repository ||= Helpers::Repository.new(payload.repository.slug)
         end
 
         def config
-          repository.config ||= Hashr.new
+          @config ||= build.config = Hashr.new
         end
 
         # @todo We need to pick a more specific name. MK.

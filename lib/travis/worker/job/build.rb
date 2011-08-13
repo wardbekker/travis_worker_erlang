@@ -72,34 +72,23 @@ module Travis
 
           def build!
             sandboxed do
-              chdir
-              repository.checkout(build.commit)
-              setup_env
-              repository.install && run_scripts
+              create_builds_directory && checkout_repository && run_build
             end
           end
 
-          def setup_env
-            exec "rvm use #{config.rvm || 'default'}"
-            exec "export BUNDLE_GEMFILE=#{config.gemfile}" if config.gemfile?
-            Array(config.env).each { |env| exec "export #{env}" unless env.empty? } if config.env
+          def create_builds_directory
+            exec "mkdir -p #{self.class.base_dir}; cd #{self.class.base_dir}", :echo => false
           end
 
-          def run_scripts
-            %w{before_script script after_script}.each do |type|
-              script = config.send(type)
-              return false if script && !run_script(script, :timeout => type)
-            end && true
+          def run_build
+            builder = Travis::Worker::Builders.builder_for(build.config)
+            puts "Using #{builder.inspect}"
+            commands = builder::Commands.new(build.config)
+            commands.run
           end
 
-          def run_script(script, options = {})
-            (script.is_a?(Array) ? script : script.split("\n")).each do |script|
-              return false unless exec(script, options)
-            end && true
-          end
-
-          def chdir(&block)
-            exec "mkdir -p #{build_dir}; cd #{build_dir}", :echo => false
+          def checkout_repository
+            repository.checkout(build.commit)
           end
       end # Build
     end # Job

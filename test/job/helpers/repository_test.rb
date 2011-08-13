@@ -1,16 +1,16 @@
 require 'test_helper'
 
-class JobRepositoryTest < Test::Unit::TestCase
+class JobHelpersRepositoryTest < Test::Unit::TestCase
   include Travis::Worker::Job
 
-  Repository.__send__ :public, *Repository.protected_instance_methods(false)
+  Helpers::Repository.__send__ :public, *Helpers::Repository.protected_instance_methods(false)
 
   attr_reader :repository
 
   def setup
     super
-    Repository.any_instance.stubs(:exec)
-    @repository = Repository.new('/path/to/build/dir', 'svenfuchs/gem-release', {})
+    Helpers::Repository.any_instance.stubs(:exec)
+    @repository = Helpers::Repository.new('svenfuchs/gem-release')
   end
 
   test 'checkout: clones a repository if the build dir is not a git repository' do
@@ -27,14 +27,14 @@ class JobRepositoryTest < Test::Unit::TestCase
 
   test 'clone: clones the repository to the current directory' do
     repository.expects(:exec).with('export GIT_ASKPASS=echo', :echo => false)
-    repository.expects(:exec).with('mkdir -p /path/to/build/dir', :echo => false)
-    repository.expects(:exec).with('git clone --depth=1000 --quiet git://github.com/svenfuchs/gem-release.git /path/to/build/dir')
+    repository.expects(:exec).with('git clone --depth=1000 --quiet git://github.com/svenfuchs/gem-release.git svenfuchs/gem-release')
     repository.clone
   end
 
   test 'fetch: clones the repository to the current directory' do
-    repository.expects(:exec).with('git clean -fdx')
-    repository.expects(:exec).with('git fetch')
+    repository.expects(:exec).with('cd svenfuchs/gem-release', :echo => false).returns(true)
+    repository.expects(:exec).with('git clean -fdx').returns(true)
+    repository.expects(:exec).with('git fetch').returns(true)
     repository.fetch
   end
 
