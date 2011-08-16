@@ -3,7 +3,7 @@ gem 'resque',              '~> 1.17.0'
 gem 'resque-meta',         '~> 1.0.3'
 gem 'resque-heartbeat',    '~> 0.0.2'
 
-platforms :ruby_18 do
+platforms :mri_18 do
   gem 'SystemTimer'
 end
 
@@ -20,17 +20,25 @@ gem "multi_json"
 gem "amqp",         :git => "git://github.com/ruby-amqp/amqp.git"
 gem "amq-client",   :git => "git://github.com/ruby-amqp/amq-client.git"
 gem "amq-protocol", :git => "git://github.com/ruby-amqp/amq-protocol.git"
-gem "eventmachine", :git => "git://github.com/eventmachine/eventmachine.git"
+gem "eventmachine", ">= 1.0.beta3"
 
 gem 'faraday', '~> 0.7.3'
 gem 'rake', '~> 0.9.2'
 gem 'thor'
-gem 'god'
+
+platform :ruby do
+  gem 'god'
+end
 
 group :development do
   gem 'yard', '~> 0.7.1'
-  gem 'rdiscount'
 
+  platform :ruby do
+    gem 'rdiscount'
+  end
+end
+
+group :debug do
   gem 'ruby-debug',   :platforms => :mri_18
   gem 'ruby-debug19', :platforms => :mri_19
 end
