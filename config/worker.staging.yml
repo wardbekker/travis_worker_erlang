@@ -1,15 +1,5 @@
-env: staging
-staging:
-  redis:
-    url: "redis://travis:211dae3157ee02fc509af84b046803d9@filefish.redistogo.com:9086"
-  reporter:
-    http:
-      url: "http://svenfuchs:lNBFeblTc3hJok5w6s4W@travis-staging.heroku.com/builds"
 queue: erlang
 shell:
-<<<<<<< HEAD
-  buffer: 1.0
-=======
   buffer: 0.25
 vms:
   count: 5
@@ -75,4 +65,3 @@ vms:
     - imagemagick
     - sphinx
     - xvfb
->>>>>>> 399829b238545327a7e2ce7707fae7fd96573fd7
