@@ -11,7 +11,7 @@ vms:
     rvm:
       rubies:
         - 1.8.7
-        - 1.9.2-head
+        - 1.9.2
         - 1.9.3
         - jruby
         - rbx
@@ -28,11 +28,12 @@ vms:
       aliases:
         rbx-2.0.0pre: rbx-2.0
         1.9.1-p378:   1.9.1
-        1.9.2-head:   1.9.2
     mysql:
       server_root_password: ""
     postgresql:
       max_connections: 256
+    travis_build_environment:
+      use_tmpfs_for_builds: false
   recipes:
     - travis_build_environment
     - apt
@@ -64,7 +65,9 @@ vms:
     - riak
     - mongodb
     - memcached
-    - rabbitmq
+    - rabbitmq::with_management_plugin
     - imagemagick
-    - sphinx
+    - sphinx::all
     - xserver
+    - python
+    - python::pip
